@@ -3,19 +3,17 @@ package de.htw.berlin.student.four.wins;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import de.htw.berlin.student.four.wins.i18n.I18nResolver;
+import de.htw.berlin.student.four.wins.controler.ContentControler;
+import de.htw.berlin.student.four.wins.listeners.MenuItemClickedListener;
+import de.htw.berlin.student.four.wins.menu.MainMenu;
 
 /**
  * Base class for the 4wins game.
@@ -27,11 +25,14 @@ public class FourWins extends JFrame {
 	private static final long serialVersionUID = -7750850088846818136L;
 
 	private static final Logger LOGGER = Logger.getLogger(FourWins.class.getName());
+	private final ContentControler contentControler;
 
 	/**
 	 * DefaultConstructor.
 	 */
 	public FourWins() {
+
+		this.contentControler = new ContentControler(this);
 	}
 
 	private void configure() {
@@ -51,41 +52,23 @@ public class FourWins extends JFrame {
 	 * Runs the game.
 	 */
 	public void run() {
-
 		configure();
 		setUpUiComponents();
 	}
 
 	private void setUpUiComponents() {
-		JMenuBar menueBar = new JMenuBar();
 
-		JMenu fileMenu = new JMenu(I18nResolver.getString("file"));
-		JMenu helpMenu = new JMenu(I18nResolver.getString("help"));
-		JMenu aboutMenu = new JMenu(I18nResolver.getString("about"));
+		MainMenu mainMenu = new MainMenu();
+		mainMenu.setMenuItemClickedListener(new MenuItemClickedListener() {
 
-		menueBar.add(fileMenu);
-		menueBar.add(helpMenu);
-		menueBar.add(aboutMenu);
-		
-		configureFileMenu(fileMenu);
-
-		this.setJMenuBar(menueBar);
-	}
-
-	private void configureFileMenu(JMenu fileMenu) {
-
-		JMenuItem quitItem = new JMenuItem(I18nResolver.getString("quit"));
-
-		quitItem.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// close the program
-				System.exit(NORMAL);
+				// super.actionPerformed(e);
+				contentControler.updateContent(getMenuItemClicked());
 			}
 		});
 
-		fileMenu.add(quitItem);
+		this.setJMenuBar(mainMenu);
 	}
 
 	private void setLookAndFeed() {
